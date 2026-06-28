@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>考古題複習網</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #FDFBF7;
+      --card-bg: #FFFFFF;
+      --text-primary: #4A4A4A;
+      --text-secondary: #7A7A7A;
+      --primary-color: #B08968;
+      --primary-hover: #9C7451;
+      --correct-bg: #EDF1E8;
+      --correct-text: #3A5A40;
+      --incorrect-bg: #F9EBEA;
+      --incorrect-text: #78281F;
+      --border-radius: 12px;
+      --transition: all 0.3s ease;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Noto Sans TC', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-primary);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    h1 {
+      font-weight: 700;
+      color: #5C4D43;
+      letter-spacing: 2px;
+      margin-bottom: 24px;
+    }
+
+    .file-selectors, .toggles {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      font-weight: 500;
+      color: var(--text-secondary);
+      background: #fff;
+      padding: 8px 16px;
+      border-radius: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+      border: 1px solid #F0EBE1;
+      transition: var(--transition);
+    }
+    
+    .checkbox-label:hover {
+      border-color: var(--primary-color);
+    }
+
+    .checkbox-label input[type="checkbox"] {
+      accent-color: var(--primary-color);
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+
+    button {
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      outline: none;
+      border-radius: 8px;
+      transition: var(--transition);
+    }
+
+    .btn-primary {
+      background-color: var(--primary-color);
+      color: #fff;
+      padding: 10px 28px;
+      font-size: 16px;
+      font-weight: 500;
+      letter-spacing: 1px;
+      box-shadow: 0 4px 10px rgba(176, 137, 104, 0.2);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(176, 137, 104, 0.3);
+    }
+
+    /* Switch Toggle styles */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+    }
+    .switch input { 
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #E0E0E0;
+      transition: .4s;
+      border-radius: 24px;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+    input:checked + .slider {
+      background-color: var(--primary-color);
+    }
+    input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+    .toggle-label-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #666;
+      font-weight: 500;
+      background: #fff;
+      padding: 8px 16px;
+      border-radius: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+      border: 1px solid #F0EBE1;
+    }
+
+    /* Card */
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      padding: 40px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.04), 0 1px 5px rgba(0,0,0,0.02);
+      margin-bottom: 30px;
+      position: relative;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px dashed #EAEAEA;
+    }
+
+    .badge {
+      background-color: #F4EBE1;
+      color: #8C6A4F;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .q-source {
+      color: #999;
+      font-size: 14px;
+    }
+
+    .bookmark-btn {
+      margin-left: auto;
+      background: none;
+      font-size: 24px;
+      padding: 0;
+      box-shadow: none;
+      transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .bookmark-btn:hover {
+      transform: scale(1.15);
+    }
+
+    .question-text {
+      font-size: 18px;
+      font-weight: 500;
+      margin-bottom: 30px;
+      line-height: 1.8;
+      color: #333;
+    }
+
+    .options-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 30px;
+    }
+
+    .option-label {
+      display: flex;
+      align-items: flex-start;
+      padding: 16px;
+      border: 1px solid #EAEAEA;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: var(--transition);
+      background-color: #FAFAFA;
+    }
+
+    .option-label:hover {
+      border-color: var(--primary-color);
+      background-color: #FFFDFB;
+    }
+    
+    .option-label.disabled {
+      cursor: not-allowed;
+      opacity: 0.8;
+    }
+
+    .option-label input {
+      margin-top: 5px;
+      margin-right: 12px;
+      accent-color: var(--primary-color);
+      transform: scale(1.2);
+    }
+
+    .option-text {
+      flex: 1;
+    }
+
+    .ref-item {
+      padding: 12px 16px;
+      background-color: #F9F9F9;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      color: #555;
+      border-left: 4px solid #E0E0E0;
+    }
+
+    textarea.short-answer {
+      width: 100%;
+      height: 120px;
+      padding: 16px;
+      border: 1px solid #EAEAEA;
+      border-radius: 8px;
+      resize: vertical;
+      font-family: inherit;
+      font-size: 16px;
+      margin-bottom: 10px;
+      background-color: #FAFAFA;
+      transition: var(--transition);
+    }
+
+    textarea.short-answer:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      background-color: #FFF;
+      box-shadow: 0 0 0 3px rgba(176, 137, 104, 0.1);
+    }
+
+    .feedback-area {
+      margin-top: 30px;
+      padding: 24px;
+      border-radius: 12px;
+      line-height: 1.7;
+      animation: fadeIn 0.5s;
+    }
+
+    .feedback-area.correct {
+      background-color: var(--correct-bg);
+      color: var(--correct-text);
+      border: 1px solid #D1DFCB;
+    }
+
+    .feedback-area.incorrect {
+      background-color: var(--incorrect-bg);
+      color: var(--incorrect-text);
+      border: 1px solid #F1D3D0;
+    }
+
+    .feedback-area.neutral {
+      background-color: #F8F9FA;
+      color: #495057;
+      border: 1px solid #E9ECEF;
+    }
+
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px dashed #EAEAEA;
+    }
+
+    .btn-nav {
+      background-color: #F0F0F0;
+      color: #555;
+      padding: 8px 20px;
+      font-weight: 500;
+    }
+
+    .btn-nav:hover:not(:disabled) {
+      background-color: #E0E0E0;
+    }
+
+    .btn-nav:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .progress-text {
+      font-weight: 500;
+      color: var(--text-secondary);
+      letter-spacing: 1px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Loading Overlay */
+    #loading-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(253, 251, 247, 0.9);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      font-size: 20px;
+      color: var(--primary-color);
+      font-weight: bold;
+    }
+    /* 通關密語遮罩 */
+    #password-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: var(--bg-color);
+      z-index: 2000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .pwd-card {
+      background: var(--card-bg);
+      padding: 40px;
+      border-radius: var(--border-radius);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+      text-align: center;
+      width: 90%;
+      max-width: 400px;
+    }
+    .pwd-card h2 {
+      margin-top: 0;
+      color: #5C4D43;
+    }
+    .pwd-card input {
+      width: 100%;
+      padding: 12px;
+      margin: 20px 0;
+      border: 1px solid #EAEAEA;
+      border-radius: 8px;
+      font-size: 16px;
+      text-align: center;
+      font-family: inherit;
+    }
+    .pwd-card input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+    }
+  </style>
+</head>
+<body>
+  <!-- 通關密語畫面 -->
+  <div id="password-overlay">
+    <div class="pwd-card">
+      <h2>🔒 存取限制</h2>
+      <p style="color: #7A7A7A; font-weight: 500;">請輸入通關密語以開始使用功能</p>
+      <input type="password" id="pwd-input" placeholder="輸入通關密語...">
+      <button id="pwd-btn" class="btn-primary" style="width: 100%;">確認</button>
+      <div id="pwd-error" style="color: #E57373; margin-top: 15px; display: none; font-weight: bold;">密語錯誤，請重試！</div>
+    </div>
+  </div>
+
+  <div id="loading-overlay">📚 讀取題庫中，請稍候...</div>
+  <div class="container">
+    <header id="setup-area">
+      <h1>📚 考古題複習網</h1>
+      <div class="file-selectors">
+        <label class="checkbox-label"><input type="checkbox" id="file-ch1" checked> Ch1</label>
+        <label class="checkbox-label"><input type="checkbox" id="file-ch2" checked> Ch2</label>
+        <label class="checkbox-label"><input type="checkbox" id="file-ch3" checked> Ch3</label>
+        <label class="checkbox-label"><input type="checkbox" id="file-ch4" checked> Ch4</label>
+      </div>
+      <div class="file-selectors">
+        <button id="load-btn" class="btn-primary">開始載入並測驗</button>
+      </div>
+    </header>
+
+    <div class="toggles" id="toggles-area" style="display: none;">
+      <div class="toggle-label-group">
+        <label class="switch">
+          <input type="checkbox" id="shuffle-toggle">
+          <span class="slider"></span>
+        </label>
+        隨機亂序模式
+      </div>
+      <div class="toggle-label-group">
+        <label class="switch">
+          <input type="checkbox" id="review-toggle">
+          <span class="slider"></span>
+        </label>
+        只複習錯題本題目
+      </div>
+    </div>
+
+    <main id="card-container" style="display: none;">
+      <div class="card">
+        <div class="card-header">
+          <span class="badge" id="q-type-badge">單選題</span>
+          <span class="q-source" id="q-source">Ch1</span>
+          <button class="bookmark-btn" id="bookmark-btn" title="加入/移出錯題本">🤍</button>
+        </div>
+        <div class="card-body">
+          <div class="question-text" id="q-text"></div>
+          <div class="options-container" id="q-options"></div>
+          <div class="action-area" style="text-align: center;">
+            <button id="submit-btn" class="btn-primary">送出答案</button>
+          </div>
+          <div class="feedback-area" id="feedback-area" style="display:none;"></div>
+        </div>
+        <div class="card-footer">
+          <button id="prev-btn" class="btn-nav">上一題</button>
+          <span class="progress-text" id="progress-text">1 / 100</span>
+          <button id="next-btn" class="btn-nav">下一題</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // 通關密語邏輯
+    const pwdOverlay = document.getElementById('password-overlay');
+    const pwdInput = document.getElementById('pwd-input');
+    const pwdBtn = document.getElementById('pwd-btn');
+    const pwdError = document.getElementById('pwd-error');
+    
+    // 如果 Session Storage 有紀錄已解鎖，就不再顯示
+    if (sessionStorage.getItem('quizUnlocked') === 'true') {
+      pwdOverlay.style.display = 'none';
+    }
+
+    const checkPwd = () => {
+      if (pwdInput.value.trim() === 'CCS-2') {
+        sessionStorage.setItem('quizUnlocked', 'true');
+        pwdOverlay.style.display = 'none';
+      } else {
+        pwdError.style.display = 'block';
+        pwdInput.value = '';
+      }
+    };
+    pwdBtn.onclick = checkPwd;
+    pwdInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') checkPwd();
+    });
+
+    let allQuestions = [];
+    let displayQuestions = [];
+    let currentIndex = 0;
+    // 初始化讀取 localStorage 錯題本
+    let wrongBook = JSON.parse(localStorage.getItem('quizWrongBook') || '[]');
+
+    // DOM 元素選取
+    const loadBtn = document.getElementById('load-btn');
+    const shuffleToggle = document.getElementById('shuffle-toggle');
+    const reviewToggle = document.getElementById('review-toggle');
+    const cardContainer = document.getElementById('card-container');
+    const togglesArea = document.getElementById('toggles-area');
+
+    const qTypeBadge = document.getElementById('q-type-badge');
+    const qSource = document.getElementById('q-source');
+    const bookmarkBtn = document.getElementById('bookmark-btn');
+    const qText = document.getElementById('q-text');
+    const qOptions = document.getElementById('q-options');
+    const submitBtn = document.getElementById('submit-btn');
+    const feedbackArea = document.getElementById('feedback-area');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const progressText = document.getElementById('progress-text');
+
+    // 載入題庫
+    loadBtn.onclick = async () => {
+      const files = [];
+      if (document.getElementById('file-ch1').checked) files.push('考古題-Ch1.json');
+      if (document.getElementById('file-ch2').checked) files.push('考古題-Ch2.json');
+      if (document.getElementById('file-ch3').checked) files.push('考古題-Ch3.json');
+      if (document.getElementById('file-ch4').checked) files.push('考古題-Ch4.json');
+      
+      if (files.length === 0) {
+        alert('請至少選擇一個題庫來源！');
+        return;
+      }
+
+      const overlay = document.getElementById('loading-overlay');
+      overlay.style.display = 'flex';
+      
+      allQuestions = [];
+      let fetchFailed = false;
+      
+      for (const file of files) {
+        try {
+          const res = await fetch(file);
+          if (!res.ok) throw new Error('HTTP error ' + res.status);
+          const data = await res.json();
+          // 將來源檔案名稱加入物件中，方便辨識
+          data.forEach(q => q.sourceFile = file.replace('.json', ''));
+          allQuestions = allQuestions.concat(data);
+        } catch (e) {
+          console.error('Failed to load', file, e);
+          fetchFailed = true;
+        }
+      }
+      
+      overlay.style.display = 'none';
+      
+      if (fetchFailed && allQuestions.length === 0) {
+        alert("讀取題庫失敗！\n\n如果此網頁是直接雙擊 HTML 檔案開啟 (file://)，瀏覽器通常會因為安全限制 (CORS) 阻擋 fetch() 讀取同目錄下的檔案。\n\n建議解法：\n1. 使用 VSCode 的 Live Server 擴充套件開啟\n2. 或在終端機輸入 python -m http.server 啟動本地伺服器\n3. 或使用 Firefox 瀏覽器開啟");
+        return;
+      }
+      
+      if (allQuestions.length > 0) {
+        togglesArea.style.display = 'flex';
+        updateDisplayQuestions();
+      }
+    };
+
+    // 切換開關事件
+    shuffleToggle.addEventListener('change', updateDisplayQuestions);
+    reviewToggle.addEventListener('change', updateDisplayQuestions);
+
+    // 更新顯示的題目列表
+    function updateDisplayQuestions() {
+      let list = [...allQuestions];
+      
+      // 錯題本模式
+      if (reviewToggle.checked) {
+        list = list.filter(q => wrongBook.includes(q.id));
+        if (list.length === 0) {
+          alert("太棒了！錯題本目前是空的。");
+          reviewToggle.checked = false; // 還原開關
+          return updateDisplayQuestions(); // 重新載入無錯題本模式
+        }
+      }
+      
+      // 隨機亂序模式
+      if (shuffleToggle.checked) {
+        list.sort(() => Math.random() - 0.5);
+      }
+      
+      displayQuestions = list;
+      currentIndex = 0;
+      
+      if (displayQuestions.length > 0) {
+        cardContainer.style.display = 'block';
+        renderQuestion();
+      } else {
+        cardContainer.style.display = 'none';
+      }
+    }
+
+    // 渲染單一題目
+    function renderQuestion() {
+      const q = displayQuestions[currentIndex];
+      
+      // 標頭資訊
+      qSource.innerText = `${q.sourceFile} - ${q.id}`;
+      bookmarkBtn.innerHTML = wrongBook.includes(q.id) ? '❤️' : '🤍';
+      
+      // 判斷題型文字以對應不同題型
+      let typeText = '簡答題';
+      if (q.type === 'single_choice') typeText = '單選題';
+      else if (q.type === 'multiple_choice') typeText = '多選題';
+      else if (q.type === 'true_false_group') typeText = '是非題群組';
+      else if (q.type === 'ordering') typeText = '排序題';
+      else if (q.type === 'matching') typeText = '配對題';
+      else if (q.type === 'categorization') typeText = '分類題';
+      else if (q.type) typeText = q.type;
+      qTypeBadge.innerText = typeText;
+      
+      // 題目內文與附圖
+      let questionHtml = (q.question || '').replace(/\n/g, '<br>');
+      
+      // 自動嘗試載入對應的圖片 (若檔案不存在則會透過 onerror 隱藏)
+      const imgName = `圖片-模擬考題 #${q.id}.png`;
+      questionHtml += `<div style="margin-top: 20px; text-align: center;">
+        <img src="${encodeURIComponent(imgName)}" alt="題目附圖" style="max-width: 100%; max-height: 400px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);" onerror="this.style.display='none'">
+      </div>`;
+      
+      qText.innerHTML = questionHtml;
+      
+      // 選項與輸入區
+      let html = '';
+      if (q.type === 'single_choice' || q.type === 'multiple_choice') {
+        const inputType = q.type === 'single_choice' ? 'radio' : 'checkbox';
+        if (q.options) {
+          q.options.forEach(opt => {
+            html += `<label class="option-label">
+              <input type="${inputType}" name="q-opt" value="${opt.label}">
+              <div class="option-text"><strong>${opt.label}.</strong> ${opt.text}</div>
+            </label>`;
+          });
+        }
+        submitBtn.innerText = '送出答案';
+      } else {
+        // 其他題型（簡答、是非群組、排序、配對、分類等）呈現唯讀的選項與對應輸入框
+        const renderList = (title, list, keyId, keyText) => {
+          if (!list || list.length === 0) return '';
+          let res = `<div style="margin-bottom: 8px; color: #7A7A7A; font-weight: bold; font-size: 14px;">${title}</div>`;
+          list.forEach(item => {
+             res += `<div class="ref-item"><strong>${item[keyId]}.</strong> ${item[keyText]}</div>`;
+          });
+          return res;
+        };
+
+        if (q.options) html += renderList('選項：', q.options, 'label', 'text');
+        if (q.items) html += renderList('子題目：', q.items, 'sub_id', 'text');
+        if (q.tools) html += renderList('工具：', q.tools, 'id', 'name');
+        if (q.functions) html += renderList('功能：', q.functions, 'id', 'text');
+        if (q.categories) html += renderList('類別：', q.categories, 'id', 'name');
+        if (q.effects) html += renderList('預期效果：', q.effects, 'id', 'name');
+        if (q.prompts) html += renderList('提示詞：', q.prompts, 'id', 'text');
+        
+        let placeholderTxt = '請在此輸入您的答案或想法...';
+        if (q.type === 'true_false_group') placeholderTxt = '請在此輸入您的答案或想法...\n(填答格式參考： A: N, B: N, C: Y, D: Y)';
+        else if (q.type === 'matching') placeholderTxt = '請在此輸入您的答案或想法...\n(填答格式參考： A: 1, B: 2, C: 3)';
+        else if (q.type === 'ordering') placeholderTxt = '請在此輸入您的答案或想法...\n(填答格式參考： A, B, C, D)';
+        else if (q.type === 'categorization') placeholderTxt = '請在此輸入您的答案或想法...\n(填答格式參考： A: 1, B: 2, C: 1)';
+
+        html += `<textarea class="short-answer" placeholder="${placeholderTxt}"></textarea>`;
+        submitBtn.innerText = '觀看答案與解析';
+      }
+      
+      qOptions.innerHTML = html;
+      
+      // 重置 UI 狀態
+      feedbackArea.style.display = 'none';
+      submitBtn.style.display = 'inline-block';
+      prevBtn.disabled = currentIndex === 0;
+      nextBtn.disabled = currentIndex === displayQuestions.length - 1;
+      progressText.innerText = `${currentIndex + 1} / ${displayQuestions.length}`;
+    }
+
+    // 書籤/錯題本切換邏輯
+    bookmarkBtn.onclick = () => {
+      const q = displayQuestions[currentIndex];
+      if (wrongBook.includes(q.id)) {
+        wrongBook = wrongBook.filter(id => id !== q.id);
+      } else {
+        wrongBook.push(q.id);
+      }
+      localStorage.setItem('quizWrongBook', JSON.stringify(wrongBook));
+      bookmarkBtn.innerHTML = wrongBook.includes(q.id) ? '❤️' : '🤍';
+      
+      // 若在錯題本模式中取消收藏，可視需求決定是否立刻移出畫面，目前為了體驗流暢，保留在畫面上直到下次切換
+    };
+
+    // 送出或觀看答案
+    submitBtn.onclick = () => {
+      const q = displayQuestions[currentIndex];
+      
+      // 解析正確答案與說明
+      let correctAns = q.answer;
+      let explanation = q.explanation || "";
+      
+      // 處理像是「是非題群組」、「分類題」、「配對題」等答案結構不同的情況
+      if ((q.type === 'true_false_group' || q.type === 'categorization') && q.items) {
+         correctAns = q.items.map(item => `${item.sub_id}: ${item.answer}`).join(', ');
+         let itemExps = q.items.map(item => `<strong>${item.sub_id}</strong>: ${item.explanation || ''}`).filter(x => !x.endsWith(': ')).join('<br>');
+         explanation = explanation ? explanation + '<br><br>' + itemExps : itemExps;
+      } else if (q.type === 'matching' && typeof q.answer === 'object' && !Array.isArray(q.answer)) {
+         correctAns = Object.entries(q.answer).map(([k, v]) => `${k} 配對 ${v}`).join(', ');
+      } else if (Array.isArray(q.answer)) {
+         correctAns = q.answer.join(', ');
+      } else if (typeof q.answer === 'object' && q.answer !== null) {
+         // 避免出現 [object Object] 的備用方案
+         correctAns = JSON.stringify(q.answer);
+      }
+      
+      explanation = explanation.replace(/\n/g, '<br>');
+
+      // 單選與多選驗證邏輯
+      if (q.type === 'single_choice' || q.type === 'multiple_choice') {
+        const inputs = document.querySelectorAll('input[name="q-opt"]');
+        const checked = Array.from(inputs).filter(el => el.checked).map(el => el.value);
+        
+        if (checked.length === 0) {
+          alert("請先選擇答案！");
+          return;
+        }
+        
+        // 鎖定輸入框與增加視覺回饋
+        inputs.forEach(el => {
+          el.disabled = true;
+          el.parentElement.classList.add('disabled');
+        });
+        
+        let isCorrect = false;
+        if (q.type === 'single_choice') {
+          isCorrect = checked[0] === q.answer;
+        } else {
+          isCorrect = checked.slice().sort().join() === (Array.isArray(q.answer) ? q.answer.slice().sort().join() : String(q.answer));
+        }
+        
+        if (isCorrect) {
+          feedbackArea.className = 'feedback-area correct';
+          feedbackArea.innerHTML = `<strong>✅ 答對了！</strong><br><br><strong>解析：</strong><br>${explanation || '無'}`;
+        } else {
+          feedbackArea.className = 'feedback-area incorrect';
+          feedbackArea.innerHTML = `<strong>❌ 答錯了！</strong><br>正確答案是：<strong>${correctAns}</strong><br><br><strong>解析：</strong><br>${explanation || '無'}`;
+        }
+      } else {
+        // 簡答/其他題型
+        const ta = document.querySelector('textarea.short-answer');
+        if (ta) ta.disabled = true;
+        
+        feedbackArea.className = 'feedback-area neutral';
+        feedbackArea.innerHTML = `<strong>💡 正確答案：</strong><br>${correctAns || '無特定標準答案'}<br><br><strong>解析：</strong><br>${explanation || '無'}`;
+      }
+      
+      feedbackArea.style.display = 'block';
+      submitBtn.style.display = 'none';
+    };
+
+    // 上下題導覽
+    prevBtn.onclick = () => {
+      if (currentIndex > 0) {
+        currentIndex--;
+        renderQuestion();
+      }
+    };
+
+    nextBtn.onclick = () => {
+      if (currentIndex < displayQuestions.length - 1) {
+        currentIndex++;
+        renderQuestion();
+      }
+    };
+  </script>
+</body>
+</html>
